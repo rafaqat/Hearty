@@ -110,7 +110,6 @@
         
         self.heartRateConnector = (WFHeartrateConnection *)[[WFHardwareConnector sharedConnector] requestSensorConnection:params];
         self.heartRateConnector.delegate = self;
-
     } else {
         NSLog(@"Other State: %c", currentState);
     }

@@ -23,7 +23,7 @@
     @weakify(self);
 	SMXHeartRateMonitorUpdated updatedBlock = ^(NSInteger heartRate){
         @strongify(self);
-        self.label.text = [NSString stringWithFormat:@"%d\nBPM", heartRate];
+        self.label.text = [NSString stringWithFormat:@"%d", heartRate];
         //NSLog(@"%d BPM", heartRate);
     };
     [[SMXHeartRateMonitor sharedInstance] addHeartRateUpdatedCallback:updatedBlock];
