@@ -48,6 +48,7 @@
 {
     [self.callbacks removeAllObjects];
     [self.heartRateConnector disconnect];
+    [[WFHardwareConnector sharedConnector] setDelegate:nil];
     [[WFHardwareConnector sharedConnector] enableBTLE:NO];
 }
 

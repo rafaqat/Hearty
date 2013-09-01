@@ -11,6 +11,9 @@
 #import <iOS-blur/AMBlurView.h>
 
 @interface SMXHeartViewController ()
+
+@property (nonatomic, copy) SMXHeartRateMonitorUpdated updatedBlock;
+
 @property (weak, nonatomic) IBOutlet UILabel *label;
 @property (weak, nonatomic) IBOutlet UIImageView *heartView;
 @property (weak, nonatomic) IBOutlet UILabel *bpmLabel;
@@ -25,28 +28,23 @@
     [super viewDidLoad];
     
     @weakify(self);
-	SMXHeartRateMonitorUpdated updatedBlock = ^(NSInteger heartRate){
+	self.updatedBlock = ^(NSInteger heartRate){
         @strongify(self);
         
-        @weakify(self);
-        
-        if (self.blurView){
-            
-            [UIView animateWithDuration:0.5 animations:^{
-                @strongify(self);
-                self.blurView.alpha = 0;
-            } completion:^(BOOL finished) {
-                @strongify(self);
-                [self.blurView removeFromSuperview];
-                self.blurView = nil;
-            }];
-        }
-    
+        [self removeBlurView];
         self.label.text = [NSString stringWithFormat:@"%d", heartRate];
     };
-    [[SMXHeartRateMonitor sharedInstance] addHeartRateUpdatedCallback:updatedBlock];
     
+    [[SMXHeartRateMonitor sharedInstance] addHeartRateUpdatedCallback:self.updatedBlock];
+    
+    [self.blurView removeFromSuperview];
     [self animateHeartBeat];
+}
+
+- (void) dealloc
+{
+    [[SMXHeartRateMonitor sharedInstance] removeHeartRateUpdatedCallback:self.updatedBlock];
+    self.updatedBlock = nil;
 }
 
 - (void) animateHeartBeat
@@ -67,6 +65,22 @@
                      } completion:^(BOOL finished) {
 
                      }];
+}
+
+- (void) removeBlurView
+{
+    if (self.blurView){
+        
+        @weakify(self);
+        [UIView animateWithDuration:0.5 animations:^{
+            @strongify(self);
+            self.blurView.alpha = 0;
+        } completion:^(BOOL finished) {
+            @strongify(self);
+            [self.blurView removeFromSuperview];
+            self.blurView = nil;
+        }];
+    }
 }
 
 @end
